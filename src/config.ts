@@ -50,7 +50,11 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     mode: disabled ? 'off' : mode(env.FLIPBACK_MODE),
     maxContinues: num(env.FLIPBACK_MAX_CONTINUES, 3),
     model: env.FLIPBACK_MODEL ?? 'haiku',
-    timeoutMs: num(env.FLIPBACK_TIMEOUT_MS, 45_000),
+    // Measured on a four-entry transcript: 15.2s, 15.4s, 21.9s, 31.4s, and one run that blew
+    // through 45s entirely. Real transcripts are an order of magnitude larger and slower. A
+    // timeout is not a loud failure - it silently allows the stop - so an install that is too
+    // tight looks like a working hook that never fires. Budget for the tail, not the median.
+    timeoutMs: num(env.FLIPBACK_TIMEOUT_MS, 90_000),
     minTurnChars: num(env.FLIPBACK_MIN_CHARS, 40),
     claudeBin: env.FLIPBACK_CLAUDE_BIN ?? 'claude',
     stateDir: env.FLIPBACK_STATE_DIR ?? path.join(os.homedir(), '.flipback'),

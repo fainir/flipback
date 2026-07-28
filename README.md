@@ -176,7 +176,7 @@ All optional, all environment variables.
 | `FLIPBACK_MODE` | `signals` | `signals` judges only suspicious turns. `always` judges every turn - more thorough, costs more. `heuristic` never spawns a judge and nudges on patterns alone |
 | `FLIPBACK_MAX_CONTINUES` | `3` | consecutive nudges per user request |
 | `FLIPBACK_MODEL` | `haiku` | model for the judge |
-| `FLIPBACK_TIMEOUT_MS` | `45000` | hard cap on the judge |
+| `FLIPBACK_TIMEOUT_MS` | `90000` | hard cap on the judge. Measured runs on a small transcript took 15-31s, so this is sized for the tail. A timeout is silent - it just allows the stop - so `flipback doctor` warns when your recorded runs get close to it |
 | `FLIPBACK_MIN_CHARS` | `40` | short turns are skipped unless a signal fired |
 | `FLIPBACK_DEBUG` | | `1` for verbose output and full nudge text in the log |
 | `HITL_API_KEY` | | route genuinely blocked agents to a person |

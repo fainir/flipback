@@ -228,6 +228,23 @@ async function doctorCommand(): Promise<never> {
   if (result.verdict) ok('judge', `${config.claudeBin} responded in ${result.durationMs}ms`);
   else bad('judge', `${result.error ?? 'no verdict'} - flipback will allow every stop`);
 
+  // The probe above is a two-line prompt. Real judging sends a whole conversation and takes
+  // several times longer, so the probe passing says nothing about whether the budget is enough.
+  // Recorded runs do, and a timeout is invisible in normal use: it just allows the stop.
+  const history = readLog(config, 200);
+  const timeouts = history.filter((r) => /timed out/.test(r.judgeError ?? '')).length;
+  const seen = history.map((r) => r.judgeMs ?? 0).filter((ms) => ms > 50);
+  if (seen.length) {
+    const slowest = Math.max(...seen);
+    const share = slowest / config.timeoutMs;
+    const detail = `${seen.length} real runs, slowest ${(slowest / 1000).toFixed(1)}s of the ${(config.timeoutMs / 1000).toFixed(0)}s budget`;
+    if (timeouts > 0) bad('judge budget', `${detail}, and ${timeouts} timed out - raise FLIPBACK_TIMEOUT_MS`);
+    else if (share > 0.6) bad('judge budget', `${detail} - too close, raise FLIPBACK_TIMEOUT_MS`);
+    else ok('judge budget', detail);
+  } else {
+    note('judge budget', `${(config.timeoutMs / 1000).toFixed(0)}s, no real runs recorded yet`);
+  }
+
   out('');
   config.hitlKey
     ? ok('human escalation', config.hitlUrl)

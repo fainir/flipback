@@ -74,10 +74,18 @@ function readSettings(settingsPath: string): Record<string, unknown> {
   }
 }
 
+/**
+ * Ceiling for the whole hook, and it has to clear the worst case rather than the typical one:
+ * a 90s judge plus an optional 45s wait on a human, plus headroom. Claude Code killing the hook
+ * mid-decision looks identical to flipback deciding nothing, which is the failure nobody
+ * investigates. Almost every turn returns in about a millisecond without reaching either.
+ */
+const HOOK_TIMEOUT_SECONDS = 180;
+
 export function install(
   scope: 'project' | 'user',
   targetDir: string = process.cwd(),
-  timeoutSeconds = 120,
+  timeoutSeconds = HOOK_TIMEOUT_SECONDS,
 ): InstallResult {
   const base = claudeDir(scope, targetDir);
   const settingsPath = path.join(base, 'settings.json');
