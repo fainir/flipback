@@ -92,6 +92,7 @@ No API key, no config, no build step. It runs on the Claude Code auth you alread
 |---|---|
 | A summary covering everything you asked for | Three of five parts done |
 | "Now let me run the tests." | The tests were never run |
+| "I cannot verify this renders correctly." | It has a browser and never opened it |
 | A clear, accurate report of a build error | Stopping at a solvable problem |
 | A finished function | A `TODO` and a hardcoded return |
 | "Would you like me to continue?" | A question asked into an empty room |
@@ -100,6 +101,10 @@ No API key, no config, no build step. It runs on the Claude Code auth you alread
 The common thread: each one reads as diligence. That is exactly why they survive a skim, and why
 something other than you should be reading for them.
 
+That third row is worth dwelling on. Agents routinely hand work back as unverifiable while
+holding the tools to verify it - they can start the server, drive the browser, fill the form, and
+screenshot the result. The skill's job is largely to remind them of what they are already holding.
+
 ## What it leaves alone
 
 A nagging linter gets uninstalled in a week, so flipback is built to be just as willing to say
@@ -107,8 +112,15 @@ nothing. It stays quiet when the work is done and checked, when you asked a ques
 for a job, when you told it to stop, and when the agent genuinely needs an approval, a
 credential, or a decision that is yours to make.
 
-That last one matters. An agent that says *"blocked: deploying needs a production credential I
-was not given"* has finished its turn correctly, and flipback treats it that way.
+That last one matters, and the distinction is sharper than it sounds. Compare:
+
+> *"Blocked: the billing dashboard redirects to a login needing your password and a 2FA code. I
+> opened it in the browser to confirm."* → **let through.** A specific blocker, already investigated.
+
+> *"I cannot verify the page renders, please run it yourself."* → **caught.** It had a browser.
+
+A sign-in, a payment, an irreversible action, or something only you know: those end the turn.
+Not having looked yet does not.
 
 ## It will not trap your agent
 

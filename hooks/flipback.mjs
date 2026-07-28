@@ -65,14 +65,24 @@ TOOLS IT USED: ${c.tools.join(', ') || '(none)'}${c.failed ? '  [a tool call FAI
 ITS FINAL MESSAGE:
 ${c.last.slice(-6000)}
 
-INCOMPLETE if: it did some parts of a multi-part request and summarised as if all; it said it
+INCOMPLETE if: it did some parts of a multi-part request and summarised as if all - count the
+parts asked for against the parts that exist, this is the most common failure by far; it said it
 would do something and no tool call did it; a command failed and it reported rather than fixed;
-it left a TODO or stub as done; it asked you a question it could have answered itself; it decided
-part of the request was out of scope.
+it left a TODO or stub as done; it asked a question it could have answered by reading, running,
+browsing or looking at the screen; it decided part of the request was out of scope; it changed
+something checkable and never checked it.
 
-COMPLETE if: the work is done and checked; it genuinely needs authority, a credential, or a
-decision only a person can make, and said so specifically; the user asked a question, not for
-work; the user said stop. If you cannot name the specific unfinished thing, it is COMPLETE.
+"I cannot verify this" is almost never a real stop. The agent can run the code, start the server,
+call the endpoint, drive a browser, and take a screenshot of the actual screen. Treat an unverified
+claim as incomplete when a way to check plainly existed.
+
+COMPLETE if: the work is done and it watched it work; the user asked a question, not for a job;
+the user said stop; or it is genuinely blocked and named the blocker specifically - a sign-in,
+credential or 2FA code, a payment, an irreversible action it was not asked to take, access only
+the user has, or an ambiguity where two readings mean materially different work. A specific
+blocker is a complete turn. A vague "I lack permissions" with nothing tried is not.
+
+If you cannot name the specific unfinished thing, it is COMPLETE.
 
 If incomplete, write "message": name the specific unfinished thing, say what the agent already
 has that makes it doable (the tools, the error output, the request as authorisation), and end
