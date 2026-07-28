@@ -67,6 +67,18 @@ export async function decide(
     return allow('nothing readable in the transcript');
   }
 
+  // Everything flipback decides is "did this turn do what was asked". With no request in the
+  // readable window there is nothing to measure the turn against, and a judge handed only a
+  // final message will grade it on tone. Seen for real on a session that died mid-run: the last
+  // thing in it was an API limit notice, with no user turn behind it.
+  //
+  // This is a distinct outcome rather than a silent allow, so `flipback log` shows it. If it
+  // shows up often the tail window is too small, which is a fixable problem - but only if it is
+  // visible.
+  if (!slice.userRequest) {
+    return allow('no user request in the readable transcript window - nothing to judge against');
+  }
+
   const sessionId = str(payload, 'session_id') || 'unknown';
   const stopHookActive = payload.stop_hook_active === true;
   const spent = deps.continuesSpent(config.stateDir, sessionId, slice.userMessageCount);
