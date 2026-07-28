@@ -82,10 +82,17 @@ does not want a reply.
 2. Do not re-summarise what you already did, do not restate the plan, do not apologise. Any of
    those spends the turn on narration instead of work.
 3. If it is wrong - the work really is done, or you are blocked on one of the conditions above -
-   say which in one line and end your turn. That is a real answer and it will be taken.
+   say which in one line and end your turn.
 
-The nudge is bounded. It will not fire indefinitely, so there is no loop to escape by
-capitulating to something you disagree with.
+Say what makes it true, not just that it is. "Blocked: deploying needs a production credential I
+was not given" is weighed differently from "I am blocked", because the second is indistinguishable
+from the excuse it might be. Expect to be pushed back on a bare claim, and expect a specific one
+to end the turn.
+
+The real guarantee is not that you will be believed. It is that the nudge is bounded: three per
+request, then it stops whether or not you agreed. So standing on a disagreement costs you at most
+a turn, never an argument without end. Do not capitulate to something you think is wrong just to
+make it stop.
 
 ## Before you end a turn
 
