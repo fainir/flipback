@@ -1,14 +1,9 @@
-name: flipback
+name: ci
 
 on:
   push:
-    paths: ['flipback/**']
+    branches: [main]
   pull_request:
-    paths: ['flipback/**']
-
-defaults:
-  run:
-    working-directory: flipback
 
 jobs:
   test:
@@ -16,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # The hook runs on whatever Node the user already has, so both live LTS lines matter.
+        # The hook runs on whatever Node the user already has, so every live line matters.
         node: ['20', '22', '24']
     steps:
       - uses: actions/checkout@v4
@@ -24,7 +19,6 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           cache: npm
-          cache-dependency-path: flipback/package-lock.json
       - run: npm ci
       - run: npm run typecheck
       - run: npm test

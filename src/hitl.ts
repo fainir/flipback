@@ -2,7 +2,7 @@ import type { Config } from './config.js';
 import type { Verdict } from './judge.js';
 
 /**
- * Optional bridge to human-in-da-loop (https://github.com/nirfeinstein/human-in-da-loop).
+ * Optional bridge to a human-in-the-loop service.
  *
  * flipback's job ends where the agent's capability does. When the judge says the agent is
  * blocked on something only a person can give - authority, a secret, a decision with real stakes

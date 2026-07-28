@@ -17,12 +17,11 @@
   "author": "Nir Feinstein",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nirfeinstein/human-in-da-loop.git",
-    "directory": "flipback"
+    "url": "git+https://github.com/fainir/flipback.git"
   },
-  "homepage": "https://github.com/nirfeinstein/human-in-da-loop/tree/main/flipback#readme",
+  "homepage": "https://github.com/fainir/flipback#readme",
   "bugs": {
-    "url": "https://github.com/nirfeinstein/human-in-da-loop/issues"
+    "url": "https://github.com/fainir/flipback/issues"
   },
   "type": "module",
   "engines": {

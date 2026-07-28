@@ -142,9 +142,13 @@ its turn is worse than one that ends it early.
 flipback tells an agent it is capable. Sometimes it genuinely is not: it needs an approval, a
 credential, or a decision with real stakes behind it. Encouragement is the wrong answer there.
 
-Set `HITL_API_KEY` and a blocked agent gets routed to a real person through
-[human-in-da-loop](https://github.com/nirfeinstein/human-in-da-loop) instead of being nudged. If
-someone answers while the hook waits, the answer comes back and the agent continues on it.
+Set `HITL_API_KEY` and a blocked agent gets routed to a real person through a
+human-in-the-loop service instead of being nudged. If someone answers while the hook waits, the
+answer comes back and the agent continues on it.
+
+flipback speaks a small, documented HTTP contract for this: one `POST /v1/requests` with a bearer
+token, a `wait_ms` budget, and an `outcome` of `answered`, `self_serve` or `pending` coming back
+(`src/hitl.ts`, about 100 lines). Point it at your own endpoint if you have one.
 
 Entirely opt-in. Without the key, none of it runs and flipback stays standalone.
 
@@ -191,7 +195,7 @@ src/decide.ts       the whole decision, with no I/O, so every path is a test
 src/state.ts        the nudge ceiling
 src/hitl.ts         optional escalation to a person
 skills/flipback/    the skill that ships into your install
-test/               74 tests
+test/               75 tests
 ```
 
 ## Requirements
