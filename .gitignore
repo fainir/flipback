@@ -1,5 +1,15 @@
 node_modules/
-dist/
 scratch/
 *.tsbuildinfo
+*.map
 .DS_Store
+
+# dist/src is committed on purpose. `/plugin install` clones this repo and runs the hook
+# straight out of it - there is no build step and no npm install in that path. There are no
+# runtime dependencies, so the compiled output is the whole shipping artifact.
+#
+# The negation is load-bearing: the parent repository ignores `dist/` at any depth, and git
+# will not re-include a file whose parent directory is excluded, so the directory has to be
+# un-excluded before anything inside it can be added.
+!dist/
+dist/test/

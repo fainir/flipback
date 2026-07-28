@@ -1,6 +1,6 @@
 {
   "name": "flipback",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A Claude Code hook that reads the conversation when an agent stops, decides whether the work was actually finished, and puts it back on when it was not.",
   "keywords": [
     "claude",

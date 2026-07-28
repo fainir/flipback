@@ -1,0 +1,16 @@
+{
+  "description": "flipback - checks every finished turn, and puts the agent back on when the work is not actually done",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node --no-warnings \"${CLAUDE_PLUGIN_ROOT}/dist/src/cli.js\" stop",
+            "timeout": 180
+          }
+        ]
+      }
+    ]
+  }
+}
