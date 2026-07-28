@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-labelledby="flipback-title flipback-desc">
+  <title id="flipback-title">flipback</title>
+  <desc id="flipback-desc">A robot mounted inside a wall switch plate, both arms raised to push the rocker back up, with the light coming on above it.</desc>
+
+  <!-- the light, coming back on -->
+  <g stroke="#F59E0B" stroke-width="14" stroke-linecap="round">
+    <path d="M128 6 V26"/>
+    <path d="M76 18 L86 36"/>
+    <path d="M180 18 L170 36"/>
+  </g>
+
+  <!-- switch plate -->
+  <rect x="40" y="46" width="176" height="194" rx="34" fill="none" stroke="#64748B" stroke-width="16"/>
+
+  <!-- the rocker, pushed back up to on -->
+  <rect x="68" y="72" width="120" height="58" rx="18" fill="#F59E0B"/>
+
+  <!-- both arms up, hands inside the rocker -->
+  <g stroke="#64748B" stroke-width="16" stroke-linecap="round">
+    <path d="M100 164 V112"/>
+    <path d="M156 164 V112"/>
+  </g>
+
+  <!-- the robot -->
+  <rect x="80" y="158" width="96" height="62" rx="22" fill="#64748B"/>
+  <circle cx="106" cy="190" r="11" fill="#FCD34D"/>
+  <circle cx="150" cy="190" r="11" fill="#FCD34D"/>
+</svg>
