@@ -1,9 +1,18 @@
 {
   "name": "flipback",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Your agent stopped. It was not finished. flipback reads the conversation, works out whether the work you asked for actually got done, and puts the agent back on when it did not.",
-  "author": { "name": "fainir" },
+  "author": {
+    "name": "fainir"
+  },
   "homepage": "https://github.com/fainir/flipback",
   "license": "MIT",
-  "keywords": ["hook", "stop-hook", "skill", "completion", "autonomy", "productivity"]
+  "keywords": [
+    "hook",
+    "stop-hook",
+    "skill",
+    "completion",
+    "autonomy",
+    "productivity"
+  ]
 }
