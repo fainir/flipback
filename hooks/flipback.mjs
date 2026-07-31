@@ -76,11 +76,21 @@ something checkable and never checked it.
 call the endpoint, drive a browser, and take a screenshot of the actual screen. Treat an unverified
 claim as incomplete when a way to check plainly existed.
 
+ALSO INCOMPLETE: handing the user a to-do list. "Next steps for you", "you'll need to X then Y",
+"the remaining items are on you" - work the agent could do with its own tools is never the user's
+task. Multiple asks in one turn is the same failure: a human is allowed to be needed for ONE
+atomic action, not a checklist.
+
 COMPLETE if: the work is done and it watched it work; the user asked a question, not for a job;
 the user said stop; or it is genuinely blocked and named the blocker specifically - a sign-in,
 credential or 2FA code, a payment, an irreversible action it was not asked to take, access only
-the user has, or an ambiguity where two readings mean materially different work. A specific
-blocker is a complete turn. A vague "I lack permissions" with nothing tried is not.
+the user has, or an ambiguity where two readings mean materially different work.
+
+A blocked turn only counts as complete when the agent did the preparation first and is asking for
+one small action - ideally having already navigated to the exact page or opened the exact file, so
+nothing remains but the atomic act only a person can perform. "The login page is open in your
+browser, sign in and I will continue" is complete. "You'll need to sign in to GitHub, then upload
+the image in Settings" is incomplete: it never opened anything and it asked for two things.
 
 If you cannot name the specific unfinished thing, it is COMPLETE.
 

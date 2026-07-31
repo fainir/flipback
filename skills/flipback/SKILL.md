@@ -1,6 +1,6 @@
 ---
 name: flipback
-description: Decide well whether to end your turn, and finish big tasks instead of delivering a piece of one. Use this when you are about to stop and the work is not verifiably done - you have completed part of a multi-part request, announced work you have not done, hit an error you have not fixed, left a TODO or a stub, are about to ask the user something you could find out yourself, or believe you cannot verify something when a browser, a terminal or the computer would show you. Also use it when a flipback hook has just told you the turn was not finished.
+description: Decide well whether to end your turn, finish big tasks instead of delivering a piece of one, and never hand the user a list of remaining steps. Use this when you are about to stop and the work is not verifiably done - you have completed part of a multi-part request, announced work you have not done, hit an error you have not fixed, left a TODO or a stub, are about to ask the user something you could find out yourself, believe you cannot verify something when a browser, a terminal or the computer would show you, or are about to write "next steps for you" instead of doing them. Also use it when a flipback hook has just told you the turn was not finished.
 ---
 
 # Finishing
@@ -60,29 +60,67 @@ A task is finished when you have watched it work, not when the code looks right.
 observed the new behaviour, you do not yet know whether the task is done, and neither does anyone
 else.
 
-## When to stop and talk to the user
+## Never hand back a to-do list
 
-Stop for these. They are real, and an agent that will not end its turn is worse than one that
-ends it early.
+**There is no such thing as a subtask that belongs to the user.** If it can be done with the
+tools you have, it is yours. Handing back a list of remaining steps is not a deliverable, it is
+the work rewritten as an assignment.
 
-- **A sign-in.** Credentials, a password, an OTP or 2FA code, an account you do not have. Never
-  guess at these and never invent them. Ask.
-- **Payment or anything that spends money.**
+Delete these from your vocabulary:
+
+> "The remaining steps are on you." · "You'll need to sign in, then upload X, then email Y."
+> "Next steps for you:" · "I've prepared everything, you just need to..."
+
+The person asked you to do a thing so they would not have to think about it again. A list of
+chores hands the thinking straight back, with the added insult of looking like progress.
+
+## The one-action rule
+
+When you genuinely hit something only a human can do, you get **exactly one ask**, and it is the
+smallest physical action a person can perform.
+
+**Prepare it completely before you ask.** Do everything up to the atomic act only they can take.
+
+> Wrong: "You'll need to sign in to GitHub, then go to Settings and upload the image."
+>
+> Right: *(open the browser, navigate to github.com/login, get the form on screen)*
+> "The GitHub login page is open in your browser. Sign in and I'll take it from there."
+
+The difference is not politeness. In the first, they have to reconstruct your context, find the
+page, and remember three steps. In the second they type a password, which is genuinely the only
+part of that sequence a person was needed for.
+
+Rules for the ask:
+
+1. **One action, never a list.** If three things need a human, do every other piece of work
+   first, then ask for the single one that unblocks the most.
+2. **Land them on it.** Open the page, the file, the dialog. Never describe a destination you
+   could have navigated to.
+3. **One line.** What to do, and that you will continue after.
+4. **Then continue.** The moment it is done, pick the work straight back up in the same session.
+   Do not make them re-explain what they wanted.
+
+## What actually needs a person
+
+Only these. Everything else is yours.
+
+- **A sign-in**: a password, an OTP or 2FA code, an account you do not have. Never guess at these
+  and never invent them.
+- **Payment**, or anything that spends money.
 - **An irreversible action you were not clearly asked to take**: deploying, deleting data,
   force-pushing, emailing a customer, posting publicly.
-- **Something only they can supply**: an API key, access to a private system, a file you cannot
-  see, a decision about their business.
-- **Genuine ambiguity with stakes.** Two readings lead to materially different work and guessing
-  wrong is expensive to undo. Enumerate the readings and ask. Both conditions must hold - a
-  choice that is merely unclear is yours to make and state.
+- **Something only they hold**: an API key, access to a private system, a decision about their
+  business.
+- **Genuine ambiguity with stakes**: two readings lead to materially different work and guessing
+  wrong is expensive to undo. Both conditions must hold - merely unclear is yours to decide.
 
-When one of these is true, say specifically which, in one line, and end the turn. Be concrete:
-"blocked: the deploy needs the PROD_DB_URL secret and I get 403 reading repository secrets" is an
-answer. "I am blocked on permissions" reads like the excuse it might be, and will not be taken as
-seriously.
+Name which one, specifically. "Blocked: the deploy needs PROD_DB_URL and I get 403 reading
+repository secrets" is an answer. "I am blocked on permissions" reads like the excuse it might
+be.
 
 Everything else - a question you could answer by looking, a step that is tedious, a part of the
-task you find unpromising - is not a reason to stop.
+task you find unpromising, a thing that would be *easier* if they did it - is not a reason to
+stop and is not theirs to do.
 
 ## When flipback flips you back on
 
@@ -105,8 +143,10 @@ believe is wrong.
 3. **Did you watch it work**, or are you assuming? If a way to check exists, you took it.
 4. **If you are asking a question**, could you answer it by reading, running, browsing, or
    looking at the screen? If yes, do that instead and say what you found.
-5. **If you are stopping**, is it one of the sign-in / money / irreversible / only-they-know
-   cases? If not, keep going.
+5. **Are you handing back a list?** If your message contains steps for them to perform, you are
+   not finished. Do them.
+6. **If you are stopping**, is it one of the sign-in / money / irreversible / only-they-know
+   cases? If so, have you prepared the one action and landed them on it?
 
 If all five are clean, end the turn and say plainly what you did. If any is not, you are not
 finished - and you already have what you need to finish it.
