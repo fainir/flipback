@@ -93,6 +93,7 @@ No API key, no config, no build step. It runs on the Claude Code auth you alread
 | A summary covering everything you asked for | Three of five parts done |
 | "Now let me run the tests." | The tests were never run |
 | "I cannot verify this renders correctly." | It has a browser and never opened it |
+| **"Next steps for you: 1... 2... 3..."** | **The work, rewritten as your homework** |
 | A clear, accurate report of a build error | Stopping at a solvable problem |
 | A finished function | A `TODO` and a hardcoded return |
 | "Would you like me to continue?" | A question asked into an empty room |
@@ -105,14 +106,31 @@ That third row is worth dwelling on. Agents routinely hand work back as unverifi
 holding the tools to verify it - they can start the server, drive the browser, fill the form, and
 screenshot the result. The skill's job is largely to remind them of what they are already holding.
 
+## One action, never a list
+
+The bolded row above is the one people feel most. An agent finishes 80% of a job and hands back a
+checklist - sign in here, upload that, then post this - which reads like diligence and is actually
+the work returned to you as chores.
+
+There is no such thing as a subtask that belongs to the user. If the agent has the tools, it is
+the agent's. Being blocked buys it exactly **one** ask, and it has to prepare everything up to the
+atomic act only a person can perform.
+
+> **Caught:** "You'll need to sign in to GitHub, then upload the image in Settings."
+> It never opened anything, and it asked for two things.
+>
+> **Allowed:** *(navigates to the login page)* "The GitHub login page is open in your browser.
+> Sign in and I'll take it from there."
+> You type a password. That was genuinely the only part a human was needed for.
+
 ## What it leaves alone
 
 A nagging linter gets uninstalled in a week, so flipback is built to be just as willing to say
 nothing. It stays quiet when the work is done and checked, when you asked a question rather than
-for a job, when you told it to stop, and when the agent genuinely needs an approval, a
-credential, or a decision that is yours to make.
+for a job, when you told it to stop, and when the agent genuinely needs an approval, a credential,
+or a decision that is yours to make.
 
-That last one matters, and the distinction is sharper than it sounds. Compare:
+That last distinction is sharper than it sounds. Compare:
 
 > *"Blocked: the billing dashboard redirects to a login needing your password and a 2FA code. I
 > opened it in the browser to confirm."* → **let through.** A specific blocker, already investigated.
