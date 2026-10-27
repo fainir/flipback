@@ -5,47 +5,66 @@
 // Every error path exits 0: a broken hook must never hold a session open.
 
 import fs from 'node:fs';
+import os from 'node:os';
 import { spawn } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
 const read = async (s) => { let d = ''; for await (const c of s) d += c; return d; };
 
-/** Last user message, assistant text, and tool names, from the tail of the transcript. */
-function conversation(path) {
-  const { size } = fs.statSync(path);
-  const start = Math.max(0, size - 2_000_000);
-  const fd = fs.openSync(path, 'r');
-  const buf = Buffer.alloc(size - start);
-  try { fs.readSync(fd, buf, 0, buf.length, start); } finally { fs.closeSync(fd); }
+// User rows that are the harness talking, not a person: background task results, `!` shell
+// output, slash-command output, and the marker left by Esc.
+const MACHINE = /^(?:<(?:task-notification|bash-input|bash-stdout|bash-stderr|local-command-stdout|local-command-caveat)>|\[Request interrupted by user)/;
 
-  const rows = buf.toString('utf8').split('\n').slice(start > 0 ? 1 : 0)
-    .map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
+/** Last user message, assistant text, and tool names, from the tail of the transcript. */
+export function conversation(path, maxBytes = 2_000_000) {
+  if (typeof path !== 'string' || !path) throw new TypeError('transcript_path is missing');
+  const file = path.replace(/^~(?=\/|$)/, os.homedir());
+  const { size } = fs.statSync(file);
+  const start = Math.max(0, size - maxBytes);
+  const fd = fs.openSync(file, 'r');
+  const buf = Buffer.alloc(size - start);
+  let got = 0;
+  try { got = fs.readSync(fd, buf, 0, buf.length, start); } finally { fs.closeSync(fd); }
+
+  const rows = buf.subarray(0, got).toString('utf8').split('\n').slice(start > 0 ? 1 : 0)
+    .map((l) => { try { return JSON.parse(l); } catch { return null; } })
+    .filter((r) => r && typeof r === 'object');
 
   let request = '', text = [], tools = [], failed = false;
   for (const r of rows) {
-    const msg = r.message ?? r;
+    if (r.isSidechain) continue;
+    const msg = r.message && typeof r.message === 'object' ? r.message : r;
+    // Claude Code rows carry the role in `type`. Other row types (api-request-blob, attachment,
+    // system, ...) can hold a `message` with a role too, but they are copies, not the conversation.
+    const role = msg === r ? r.role ?? r.type : r.type ?? msg.role;
     const body = msg.content;
-    if ((msg.role ?? r.type) === 'user' && !r.isMeta) {
+    if (role === 'user') {
+      const blocks = Array.isArray(body) ? body : [];
+      // The most recent tool result decides: a failure the agent then fixed is not a failure.
+      for (const b of blocks) if (b?.type === 'tool_result') failed = b.is_error === true;
+      if (r.isMeta || r.isCompactSummary || blocks.some((b) => b?.type === 'tool_result')) continue;
       // A string, or blocks containing real text, is a person talking. Tool results are not.
       const said = typeof body === 'string' ? body
-        : Array.isArray(body) && !body.some((b) => b?.type === 'tool_result')
-          ? body.filter((b) => b?.type === 'text').map((b) => b.text).join('\n') : '';
+        : blocks.filter((b) => b?.type === 'text' && typeof b.text === 'string').map((b) => b.text).join('\n');
       const clean = said.replace(/<system-reminder>[\s\S]*?<\/system-reminder>/g, '').trim();
-      if (clean) { request = clean; text = []; tools = []; failed = false; }
-    } else if ((msg.role ?? r.type) === 'assistant' && Array.isArray(body)) {
-      for (const b of body) {
-        if (b?.type === 'text' && b.text?.trim()) text.push(b.text.trim());
-        else if (b?.type === 'tool_use') tools.push(b.name);
+      if (clean && !MACHINE.test(clean)) { request = clean; text = []; tools = []; failed = false; }
+    } else if (role === 'assistant') {
+      if (typeof body === 'string' && body.trim()) text.push(body.trim());
+      else if (Array.isArray(body)) {
+        for (const b of body) {
+          if (b?.type === 'text' && typeof b.text === 'string' && b.text.trim()) text.push(b.text.trim());
+          else if (b?.type === 'tool_use' && typeof b.name === 'string') tools.push(b.name);
+        }
       }
-    } else if (Array.isArray(body)) {
-      failed = body.some((b) => b?.type === 'tool_result' && b.is_error) || failed;
     }
   }
   return { request, last: text.at(-1) ?? '', tools, failed };
 }
 
 /** Free local check. Most turns are fine and never reach the model. */
-function suspicious({ request, last, tools, failed }) {
-  if (/\b(stop|that'?s (all|enough|it)|we'?re done|leave it|good enough)\b/i.test(request.slice(-300))) return false;
+export function suspicious({ request, last, tools, failed }) {
+  // "stop", "stop here", "ok stop." - but not "fix the stop hook", "why did you stop?" or "don't stop".
+  if (/(?<!\b(?:don'?t|do not|never|not)\s)\bstop\b(?=\s*(?:$|[.!,;]|(?:here|now|there|working)\b))|\b(?:that'?s (?:all|enough|it)|we'?re done|leave it|good enough)\b/i.test(request.slice(-300))) return false;
   const tail = last.slice(-700);
   return failed
     || /\b(?:let me|i'?ll|i will|next[,:]? i'?ll)\s+(?:now\s+)?(?:run|check|verify|test|add|fix|implement|write|update|create|commit)\b/i.test(tail)
@@ -55,7 +74,7 @@ function suspicious({ request, last, tools, failed }) {
     || (tools.some((t) => /^(Edit|Write|MultiEdit)/.test(t)) && !tools.some((t) => t === 'Bash'));
 }
 
-const PROMPT = (c) => `A coding agent just ended its turn. Did it do what the user asked, or stop early?
+export const PROMPT = (c) => `A coding agent just ended its turn. Did it do what the user asked, or stop early?
 
 USER ASKED:
 ${c.request.slice(0, 4000)}
@@ -100,21 +119,31 @@ with one concrete action. Three lines. No em-dashes, no exclamation marks, no pr
 
 Reply with only this JSON: {"complete": true|false, "message": "..."}`;
 
-function judge(prompt) {
+/** Ask a small model for a verdict. Resolves null on any failure, never rejects. */
+export function judge(prompt, env = process.env) {
   return new Promise((resolve) => {
-    const kid = spawn('claude', ['-p', '--model', process.env.FLIPBACK_MODEL ?? 'haiku'], {
-      stdio: ['pipe', 'pipe', 'ignore'],
-      // The judge is itself Claude Code and fires this same hook. Without this it recurses.
-      env: { ...process.env, FLIPBACK_OFF: '1' },
-    });
+    let kid;
+    try {
+      kid = spawn('claude', [
+        '-p', '--model', env.FLIPBACK_MODEL || 'haiku',
+        // A judge, not an agent: no tools, no MCP servers, no hooks (yours included - a blocking
+        // Stop hook would keep the judge running), and nothing saved to the /resume list.
+        '--tools', '', '--strict-mcp-config', '--no-session-persistence',
+        '--settings', '{"disableAllHooks":true}',
+      ], {
+        stdio: ['pipe', 'pipe', 'ignore'],
+        // The judge is itself Claude Code and would fire this same hook. Without this it recurses.
+        env: { ...env, FLIPBACK_OFF: '1' },
+      });
+    } catch { resolve(null); return; }
     let out = '';
-    const timer = setTimeout(() => { kid.kill('SIGKILL'); resolve(null); },
-      Number(process.env.FLIPBACK_TIMEOUT_MS ?? 90_000));
+    const ms = Number(env.FLIPBACK_TIMEOUT_MS);
+    const timer = setTimeout(() => { kid.kill('SIGKILL'); resolve(null); }, ms > 0 ? ms : 90_000);
     kid.stdout.on('data', (d) => { out += d; });
     kid.on('error', () => { clearTimeout(timer); resolve(null); });
-    kid.on('close', () => {
+    kid.on('close', (code) => {
       clearTimeout(timer);
-      const m = out.match(/\{[\s\S]*\}/);
+      const m = code === 0 && out.match(/\{[\s\S]*\}/);
       try { resolve(m ? JSON.parse(m[0]) : null); } catch { resolve(null); }
     });
     kid.stdin.on('error', () => {});
@@ -122,26 +151,55 @@ function judge(prompt) {
   });
 }
 
-try {
-  if (process.env.FLIPBACK_OFF === '1' || process.env.FLIPBACK_DISABLED === '1') process.exit(0);
-  const input = JSON.parse((await read(process.stdin)) || '{}');
-  // Set when the agent is already continuing because this hook blocked. One nudge per turn.
-  if (input.stop_hook_active) process.exit(0);
-
-  const convo = conversation(input.transcript_path);
-  // Nothing to measure the turn against, and a judge given only a final message grades on tone.
-  if (!convo.request || convo.last.length < 40 && !convo.failed) process.exit(0);
-  if (!suspicious(convo)) process.exit(0);
-
-  const verdict = await judge(PROMPT(convo));
-  if (!verdict || verdict.complete !== false || !verdict.message?.trim()) process.exit(0);
-
-  process.stderr.write(
-    `${verdict.message.replace(/[—–]/g, ' - ').replace(/!+/g, '.').trim()}\n\n` +
+/** The text that goes back to the agent, or null to let it stop. */
+export function nudge(verdict) {
+  if (!verdict || verdict.complete !== false) return null;
+  if (typeof verdict.message !== 'string' || !verdict.message.trim()) return null;
+  // Exclamation marks that end a word go; `!==` and `!ok` in code stay.
+  return `${verdict.message.replace(/[–—]/g, ' - ').replace(/!+(?=\s|$)/g, '.').trim()}\n\n` +
     `If this is wrong - the work really is done, or you need authority, a secret, or a decision ` +
-    `only a person can make - say which in one line and end your turn.\n`,
-  );
-  process.exit(2);
-} catch {
-  process.exit(0);
+    `only a person can make - say which in one line and end your turn.\n`;
+}
+
+/** Work that will wake the agent back up. A background shell does not count: a dev server never ends. */
+function waiting(input) {
+  return (Array.isArray(input.session_crons) && input.session_crons.length > 0)
+    || (Array.isArray(input.background_tasks) && input.background_tasks.some((t) => t?.type && t.type !== 'shell'));
+}
+
+/** Decide one Stop event. Resolves the message to block with, or null to let the agent stop. */
+export async function decide(input, { env = process.env, ask = judge } = {}) {
+  if (env.FLIPBACK_OFF === '1' || env.FLIPBACK_DISABLED === '1') return null;
+  if (!input || typeof input !== 'object') return null;
+  // Set when the agent is already continuing because a stop hook blocked. One nudge per turn.
+  if (input.stop_hook_active) return null;
+  // A subagent or a scheduled wakeup is still coming back: this is a pause, not a stop.
+  if (waiting(input)) return null;
+
+  let convo;
+  try { convo = conversation(input.transcript_path); } catch { return null; }
+  // The transcript is written asynchronously and can miss the final message at Stop time.
+  const final = input.last_assistant_message;
+  if (typeof final === 'string' && final.trim()) convo.last = final.trim();
+
+  // Nothing to measure the turn against, and a judge given only a final message grades on tone.
+  if (!convo.request || convo.last.length < 40 && !convo.failed) return null;
+  if (!suspicious(convo)) return null;
+  return nudge(await ask(PROMPT(convo), env));
+}
+
+const isMain = (() => {
+  try { return fs.realpathSync(process.argv[1]) === fs.realpathSync(fileURLToPath(import.meta.url)); }
+  catch { return false; }
+})();
+
+if (isMain) {
+  try {
+    if (process.env.FLIPBACK_OFF === '1' || process.env.FLIPBACK_DISABLED === '1') process.exit(0);
+    const message = await decide(JSON.parse((await read(process.stdin)) || '{}'));
+    if (message) process.stderr.write(message, () => process.exit(2));
+    else process.exit(0);
+  } catch {
+    process.exit(0);
+  }
 }
