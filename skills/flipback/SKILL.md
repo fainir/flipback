@@ -148,5 +148,5 @@ believe is wrong.
 6. **If you are stopping**, is it one of the sign-in / money / irreversible / only-they-know
    cases? If so, have you prepared the one action and landed them on it?
 
-If all five are clean, end the turn and say plainly what you did. If any is not, you are not
+If all six are clean, end the turn and say plainly what you did. If any is not, you are not
 finished - and you already have what you need to finish it.
