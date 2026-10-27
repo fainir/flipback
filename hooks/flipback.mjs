@@ -156,7 +156,7 @@ export function nudge(verdict) {
   if (!verdict || verdict.complete !== false) return null;
   if (typeof verdict.message !== 'string' || !verdict.message.trim()) return null;
   // Exclamation marks that end a word go; `!==` and `!ok` in code stay.
-  return `${verdict.message.replace(/[–—]/g, ' - ').replace(/!+(?=\s|$)/g, '.').trim()}\n\n` +
+  return `${verdict.message.replace(/[\u2013\u2014]/g, ' - ').replace(/!+(?=\s|$)/g, '.').trim()}\n\n` +
     `If this is wrong - the work really is done, or you need authority, a secret, or a decision ` +
     `only a person can make - say which in one line and end your turn.\n`;
 }

@@ -198,9 +198,9 @@ describe('nudge', () => {
   });
 
   test('replaces dashes and shouting, but not "!" inside code', () => {
-    const out = nudge({ complete: false, message: 'Run it now! Then fix `a !== b` and `if (!ok)`—the rest–too!!' });
+    const out = nudge({ complete: false, message: 'Run it now! Then fix `a !== b` and `if (!ok)`\u2014the rest\u2013too!!' });
     assert.match(out, /^Run it now\. Then fix `a !== b` and `if \(!ok\)` - the rest - too\.\n/);
-    assert.doesNotMatch(out, /[–—]/);
+    assert.doesNotMatch(out, /[\u2013\u2014]/);
   });
 });
 
