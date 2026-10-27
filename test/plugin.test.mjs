@@ -127,7 +127,10 @@ describe('the Stop hook, end to end', () => {
   });
 
   test('no claude on PATH exits 0', () => {
-    const r = runHook(stopInput('incomplete.jsonl'), { PATH: path.dirname(process.execPath) });
+    // node's own bin directory can hold a real `claude`, so PATH gets a directory with only node.
+    const nodeOnly = fs.mkdtempSync(path.join(tmp, 'bin-'));
+    fs.symlinkSync(process.execPath, path.join(nodeOnly, 'node'));
+    const r = runHook(stopInput('incomplete.jsonl'), { PATH: nodeOnly });
     assert.equal(r.code, 0);
     assert.equal(r.stderr, '');
   });
