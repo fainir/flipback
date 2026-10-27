@@ -1,20 +1,22 @@
 {
   "name": "flipback",
   "owner": {
-    "name": "fainir"
+    "name": "Nir Feinstein",
+    "url": "https://github.com/fainir"
   },
   "metadata": {
     "description": "flipback - put the agent back on when it stops early.",
-    "version": "1.0.0"
+    "version": "1.0.1"
   },
   "plugins": [
     {
       "name": "flipback",
       "source": "./",
       "description": "A Stop hook that reads the conversation when your agent ends its turn and decides whether the work actually got done. Partial delivery, announced-but-not-done work, stopping at the first error, TODOs left as finished, questions asked into an empty room - it hands back the specific unfinished thing and the agent carries on. Bounded to one nudge per turn. Ships a skill that teaches the agent to catch its own early stops.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": {
-        "name": "fainir"
+        "name": "Nir Feinstein",
+        "url": "https://github.com/fainir"
       },
       "keywords": [
         "hook",

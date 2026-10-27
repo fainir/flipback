@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+// Stands in for `claude -p` in tests, so no test ever reaches a model.
+//   FAKE_CLAUDE_REPLY  what to print on stdout (default: a "complete" verdict)
+//   FAKE_CLAUDE_SLEEP  milliseconds to hang before replying
+//   FAKE_CLAUDE_EXIT   exit code (default 0)
+//   FAKE_CLAUDE_LOG    file to record argv, FLIPBACK_OFF and the prompt into
+const fs = require('node:fs');
+let prompt = '';
+process.stdin.on('data', (d) => { prompt += d; });
+process.stdin.on('end', () => {
+  const env = process.env;
+  if (env.FAKE_CLAUDE_LOG) {
+    fs.writeFileSync(env.FAKE_CLAUDE_LOG, JSON.stringify({
+      args: process.argv.slice(2), flipbackOff: env.FLIPBACK_OFF, prompt,
+    }));
+  }
+  setTimeout(() => {
+    process.stdout.write(env.FAKE_CLAUDE_REPLY ?? '{"complete": true, "message": ""}');
+    process.exitCode = Number(env.FAKE_CLAUDE_EXIT ?? 0);
+  }, Number(env.FAKE_CLAUDE_SLEEP ?? 0));
+});

@@ -1,0 +1,29 @@
+{
+  "name": "flipback",
+  "private": true,
+  "description": "A Claude Code plugin: a Stop hook that notices when your agent ends a turn before the work is done, and sends it back to finish.",
+  "license": "MIT",
+  "author": "Nir Feinstein (https://github.com/fainir)",
+  "homepage": "https://github.com/fainir/flipback#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fainir/flipback.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fainir/flipback/issues"
+  },
+  "keywords": [
+    "claude-code",
+    "claude-code-plugin",
+    "stop-hook",
+    "hooks",
+    "skill",
+    "agents"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}

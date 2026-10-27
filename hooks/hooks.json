@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node --no-warnings \"${CLAUDE_PLUGIN_ROOT}/dist/src/cli.js\" stop",
+            "command": "node --no-warnings \"${CLAUDE_PLUGIN_ROOT}/hooks/flipback.mjs\"",
             "timeout": 180
           }
         ]
