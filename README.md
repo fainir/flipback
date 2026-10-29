@@ -315,3 +315,13 @@ test/                     node:test suites, fixture transcripts, the stub judge
 ## License
 
 [MIT](LICENSE)
+
+---
+
+### More open source by [Nir Feinstein](https://nirfeinste.in)
+
+- [agent-harness](https://github.com/fainir/agent-harness) - make Claude Code or Codex act as a product team, a CEO or a portfolio manager
+- [frugal](https://github.com/fainir/frugal) - your agent finds the cheaper honest way before it pays for anything
+- [recall](https://github.com/fainir/recall) - your Claude Code memory in every agent, over MCP
+- [most-capable-agent-system-prompt](https://github.com/fainir/most-capable-agent-system-prompt) - the copy-paste prompt for a self-improving agent system
+- [All projects](https://nirfeinste.in/#open-source)
