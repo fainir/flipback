@@ -314,7 +314,7 @@ test/                     node:test suites, fixture transcripts, the stub judge
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE). Privacy: flipback has no server and stores nothing; see [PRIVACY.md](PRIVACY.md).
 
 ---
 
