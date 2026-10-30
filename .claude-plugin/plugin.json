@@ -8,9 +8,6 @@
   },
   "homepage": "https://github.com/fainir/flipback",
   "repository": "https://github.com/fainir/flipback",
-  "documentationUrl": "https://github.com/fainir/flipback#readme",
-  "supportUrl": "https://github.com/fainir/flipback/issues",
-  "privacyPolicyUrl": "https://github.com/fainir/flipback/blob/main/PRIVACY.md",
   "license": "MIT",
   "keywords": [
     "hook",
