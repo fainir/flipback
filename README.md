@@ -295,8 +295,8 @@ end-to-end tests run the exact command from `hooks/hooks.json` with that stub fi
 You can run the hook by hand the same way:
 
 ```console
-$ echo "{\"transcript_path\": \"$PWD/test/fixtures/incomplete.jsonl\"}" \
-    | PATH="$PWD/test/fixtures/bin:$PATH" \
+$ echo '{"transcript_path": "test/fixtures/incomplete.jsonl"}' \
+    | PATH="test/fixtures/bin:$PATH" \
       FAKE_CLAUDE_REPLY='{"complete": false, "message": "Write the tests for slugify(), then add the README example."}' \
       node hooks/flipback.mjs; echo "exit $?"
 Write the tests for slugify(), then add the README example.
