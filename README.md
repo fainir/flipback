@@ -195,8 +195,8 @@ your latest request, the tools used since, and the agent's final message. Then:
 
 ## It will not trap your agent
 
-- **One nudge per turn.** It never blocks a turn that a stop hook already sent back, and Claude
-  Code caps consecutive stop-hook continuations on its own.
+- **One nudge per turn.** When Claude Code sets `stop_hook_active`, flipback exits before it
+  reads the transcript or calls the judge.
 - **The agent can disagree.** Every nudge ends with an out: if the work is done, or it needs
   something only a person can give, it says which in one line and ends the turn.
 - **Every failure exits quietly.** Judge unreachable, timed out, transcript unreadable: your agent
@@ -247,9 +247,13 @@ Do, for big jobs. `/goal` needs a condition each session and checks it with a mo
 turn. flipback needs nothing, works out what "done" means from your request, and calls a model on
 about one turn in seven. They cover different turns and work together.
 
-**Can it loop forever?**
-No. Claude Code sets `stop_hook_active` when the agent is continuing because a stop hook blocked
-it, and flipback never blocks in that state. The most it adds to a turn is one round.
+**How many times can flipback continue a turn?**
+At most once. When Claude Code reports that a Stop hook already continued the turn, flipback
+lets the agent stop. Claude Code also caps how many times hooks can continue the turn in a row.
+Each tool call resets that count, so check `stop_hook_active` in every Stop hook you use.
+Set a finite `--max-turns` for unattended print-mode runs.
+[Stop hook reference](https://code.claude.com/docs/en/hooks#stop),
+[CLI reference](https://code.claude.com/docs/en/cli-reference).
 
 **What does the judge see, and where does it go?**
 Your latest request, the names of the tools the agent used, and its final message. Not file
