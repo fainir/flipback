@@ -14,7 +14,8 @@
 </p>
 
 <p align="center">
-  <a href="#install"><strong>Install</strong></a> ·
+  <a href="#try-a-sample-stop-event"><strong>Try it</strong></a> ·
+  <a href="#install">Install</a> ·
   <a href="#flipback-and-goal">vs /goal</a> ·
   <a href="#measured-on-real-sessions">Measured</a> ·
   <a href="#how-it-decides">How it decides</a> ·
@@ -77,10 +78,10 @@ included) has already sent back.
 
 ## Measured on real sessions
 
-We replayed a month of the author's own interactive Claude Code sessions, **823 turn endings
-from 262 sessions**, through flipback's actual transcript reader and local check. Every turn the
-check flagged went to the judge prompt on Claude Haiku, and a second model (Claude Opus 5.5) then
-read each request and final message to decide whether the work really was unfinished.
+We replayed **823 turn endings from 262** of the author's interactive Claude Code sessions
+through flipback's transcript reader and local check. Flagged turns went to the Haiku judge.
+A second model (Claude Opus 5.5) reviewed the requests and final messages for the 36 turns
+flipback would have continued.
 
 - **86% of turns never reached a model.** The free local check let them stop. The other 14% made
   one Haiku call each.
@@ -89,9 +90,8 @@ read each request and final message to decide whether the work really was unfini
   - "Now let me verify the rest of the screens render correctly, then publish." *(turn ends)*
   - "The port-4000 server never started (the session ended first). Starting it again:" *(turn ends)*
   - "Should I retry that check now?" *(it had the build and the emulator)*
-- **The 6 wrong nudges** were real blockers: a token only the person could paste, a preference
-  only they could choose, a status run that had already logged everything. Every nudge tells the
-  agent it may say so in one line and stop, so a wrong nudge costs one short reply.
+- **The other 6 nudges** were unnecessary. They included a token only the person could enter,
+  a preference only they could choose, and a status run that had already logged everything.
 - **It is tuned to stay quiet, so it misses some.** In a random 50 of the turns the local check
   let through, 6 were also unfinished, mostly ones whose last message did not announce the next
   step ("The offer stands: I can open App Store Connect..."). For a job that must finish, set a
@@ -121,12 +121,21 @@ You need **Node.js 18 or newer** and the **`claude` CLI** on your `PATH`: the ho
 `node`, and the judge is `claude -p` on the sign-in you already have. No API key, no config, no
 dependencies.
 
-To try it for one session without installing:
+## Try a sample Stop event
+
+Run the hook's decision on two sample transcripts using Git and Node.js 18 or newer. The demo
+uses a fixed judge reply and runs entirely on your computer.
 
 ```bash
 git clone https://github.com/fainir/flipback
-claude --plugin-dir ./flipback
+cd flipback
+npm run demo
 ```
+
+A finished turn can stop. For the unfinished turn, the hook returns the instruction to write
+the tests for `slugify()` and add the README example.
+
+For a one-session trial with your own turn, run `claude --plugin-dir .` from this checkout.
 
 ## What it catches
 

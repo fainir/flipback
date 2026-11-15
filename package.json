@@ -24,6 +24,7 @@
     "node": ">=18"
   },
   "scripts": {
+    "demo": "node scripts/demo.mjs",
     "test": "node --test"
   }
 }
